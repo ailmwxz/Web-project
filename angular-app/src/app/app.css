@@ -1,0 +1,23 @@
+/* Принудительно для ВСЕХ элементов без исключения */
+* {
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  /* Убираем белый фон на корню */
+  background-color: #000 !important; 
+  overflow-x: hidden;
+}
+
+/* Это может быть важно для Angular 17+ */
+app-root {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}

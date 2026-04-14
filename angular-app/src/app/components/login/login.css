@@ -1,0 +1,208 @@
+.login-page {
+  position: fixed; 
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+    url('../../../assets/images/login-bg.jpg');
+  background-size: cover;    
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  
+  padding: 1.5rem 2rem; 
+  
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 380px; 
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+}
+
+.logo h1 {
+  margin: 0.5rem 0;
+  color: #2d3436;
+  font-size: 1.8rem;
+}
+
+.input-group {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #636e72;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  box-sizing: border-box; 
+}
+
+.login-btn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #01a03eda; 
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-btn:hover {
+  background-color: #00cd4fda;
+}
+
+.error-alert {
+  background-color: #ff7675;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* регестрация */
+.footer-links {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column; 
+  gap: 10px;               
+  font-size: 0.85rem;
+  color: #636e72;
+}
+
+.footer-links a {
+  color: #01a03eda;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.footer-links-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+}
+
+/* кнопка назад */
+.back-to-home {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  text-decoration: none;
+  color: #fff;
+  background: #01b948d5; 
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  transition: 0.3s ease;
+  z-index: 100;
+  font-family: 'Inter', sans-serif;
+
+}
+
+.back-to-home:hover {
+  background: #000;
+  padding-left: 25px; 
+}
+
+.back-to-home .arrow {
+  margin-right: 5px;
+}
+
+
+/* Полоса*/
+.full-nav-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.783); 
+  border-bottom: 2px solid #10ac84;     
+  padding: 12px 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1200px; 
+  margin: 0 auto;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #2d3436;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: 0.3s;
+  font-family: 'Inter', sans-serif;
+  font-weight: bold;
+
+}
+
+.nav-item:hover {
+  color: #10ac84;
+}
+
+.nav-item.current {
+  color: #636e72;
+  cursor: default;
+}
+
+.nav-divider {
+  color: #dfe6e9;
+  font-weight: 300;
+}
+
+/* Кнопка "Назад" */
+.back-link-simple {
+  position: absolute;
+  top: 65px; 
+  left: 30px;
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+  z-index: 100;
+  background: rgba(16, 172, 132, 0.2);
+  padding: 5px 15px;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+.back-link-simple:hover {
+  background: rgba(16, 172, 132, 0.8);
+}

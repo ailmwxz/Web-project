@@ -1,0 +1,62 @@
+
+
+<div class="login-page">
+    <!-- <a routerLink="/home" class="back-to-home">
+    <span class="arrow">←  </span> На главную</a> -->
+    <nav class="full-nav-bar">
+    <div class="nav-container">
+      <a routerLink="/home" class="nav-item">Главная</a>
+      <span class="nav-divider">/</span>
+      <a routerLink="/categories" class="nav-item">Категории</a>
+      <span class="nav-divider">/</span>
+      <span class="nav-item current">Авторизация</span>
+    </div>
+  </nav>
+
+  <a routerLink="/home" class="back-link-simple">← Назад</a>
+
+
+
+  <div class="login-card">
+    <div class="logo">
+      <h1>FitnessApp 🏛</h1>
+    </div>
+    
+    <p class="subtitle">Добро пожаловать в команду!</p>
+
+    <form (ngSubmit)="onLogin()">
+      <div class="input-group">
+        <label>Логин</label>
+        <input 
+          type="text" 
+          name="username" 
+          [(ngModel)]="loginData.username" 
+          placeholder="Твой никнейм"
+          required>
+      </div>
+
+      <div class="input-group">
+        <label>Пароль</label>
+        <input 
+          type="password" 
+          name="password" 
+          [(ngModel)]="loginData.password" 
+          placeholder="••••••••"
+          required>
+      </div>
+
+      @if (errorMessage) {
+        <div class="error-alert">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <button type="submit" class="login-btn">ВОЙТИ</button>
+    </form>
+    
+    <div class="footer-links">
+      <a href="#">Забыли пароль?</a>
+      <span>Нет аккаунта? <a href="#">Регистрация</a></span>
+    </div>
+  </div>
+</div>
