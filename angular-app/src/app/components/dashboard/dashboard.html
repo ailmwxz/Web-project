@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div class="dash-container">
   <nav class="top-bar">
     <div class="content">
@@ -35,3 +36,65 @@
     </div>
   </main>
 </div>
+=======
+<nav class="navbar">
+  <div class="logo">FITNESS<span>APP</span></div>
+  <button class="btn-ghost" (click)="logout()">DISCONNECT</button>
+</nav>
+
+<main class="container">
+  @if (isLoading) {
+    <div class="loader-overlay">
+      <div class="spinner"></div>
+      <p>SYNCING BIO-DATA...</p>
+    </div>
+  } @else {
+    <div class="dashboard-grid">
+      
+      <div class="glass-card stat-card">
+        <span class="label">DAILY ENERGY</span>
+        <div class="stat-value">
+          {{ data?.dailyCalories }} <span>/ {{ data?.goalCalories }} kcal</span>
+        </div>
+        <div class="progress-bar">
+          <div class="fill" [style.width.%]="(data!.dailyCalories / data!.goalCalories) * 100"></div>
+        </div>
+      </div>
+
+      <div class="glass-card form-card">
+        <h3>LOG ACTIVITY</h3>
+        <div class="input-stack">
+          <input type="text" [(ngModel)]="newWorkout.name" placeholder="Workout Name">
+          <input type="number" [(ngModel)]="newWorkout.duration" placeholder="Minutes">
+          <input type="number" [(ngModel)]="newWorkout.kcal_burn" placeholder="Calories">
+          <select [(ngModel)]="newWorkout.difficulty">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+          <button class="btn-glow" (click)="saveWorkout()">APPEND LOG</button>
+        </div>
+      </div>
+
+      <div class="glass-card list-card col-span-2">
+        <h3>RECENT RECORDS</h3>
+        <div class="scroll-area">
+          @for (item of data?.recentWorkouts; track item.id) {
+            <div class="list-item">
+              <div class="item-meta">
+                <span class="difficulty-tag" [attr.data-level]="item.difficulty">{{ item.difficulty }}</span>
+                <strong>{{ item.name }}</strong>
+                <small>{{ item.duration }}m • {{ item.kcal_burn }}kcal</small>
+              </div>
+              <button class="btn-delete" (click)="deleteWorkout(item.id!)">REMOVE</button>
+            </div>
+          } @empty {
+            <div class="empty-state">No movements detected in the log.</div>
+          }
+        </div>
+      </div>
+
+    </div>
+  }
+</main>
+>>>>>>> fb56709 (updated)
