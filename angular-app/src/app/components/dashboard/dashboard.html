@@ -1,42 +1,3 @@
-<<<<<<< HEAD
-<div class="dash-container">
-  <nav class="top-bar">
-    <div class="content">
-      <span class="logo">💪 FitnessApp</span>
-      <div class="menu">
-        <a routerLink="/dashboard" class="active">Дашборд</a>
-        <a routerLink="/login">Выход</a>
-      </div>
-    </div>
-  </nav>
-
-  <main class="main-content">
-    <h1>Добро пожаловать, {{ user.name }}!</h1>
-
-    <div class="grid">
-      <div class="card">
-        <h3>Мой прогресс</h3>
-        <label>Текущий вес (кг):</label>
-        <input type="number" [(ngModel)]="user.weight" class="weight-input">
-        <p>Цель: {{ user.goal }} кг</p>
-        <button (click)="updateWeight()" class="save-btn">Сохранить</button>
-      </div>
-
-      <div class="card">
-        <h3>План на сегодня</h3>
-        <ul>
-          @for (item of workouts; track item.title) {
-            <li>
-              <strong>{{ item.title }}</strong> — {{ item.reps }} 
-              <span [class.done]="item.status === 'Done'">[{{ item.status }}]</span>
-            </li>
-          }
-        </ul>
-      </div>
-    </div>
-  </main>
-</div>
-=======
 <nav class="navbar">
   <div class="logo">FITNESS<span>APP</span></div>
   <button class="btn-ghost" (click)="logout()">DISCONNECT</button>
@@ -97,4 +58,3 @@
     </div>
   }
 </main>
->>>>>>> fb56709 (updated)
