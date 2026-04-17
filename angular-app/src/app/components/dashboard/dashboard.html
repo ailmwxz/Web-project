@@ -1,17 +1,41 @@
 <nav class="navbar">
   <div class="logo">FITNESS<span>APP</span></div>
-  <button class="btn-ghost" (click)="logout()">DISCONNECT</button>
+
+  <div class="nav-links">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Дашборд
+    </a>
+    <a routerLink="/workouts" routerLinkActive="active" class="nav-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M3 8h4M17 8h4M3 16h4M17 16h4"/></svg>
+      Тренировки
+    </a>
+    <a routerLink="/stats" routerLinkActive="active" class="nav-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Статистика
+    </a>
+    <a routerLink="/profile" routerLinkActive="active" class="nav-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Профиль
+    </a>
+  </div>
+
+  <button class="btn-logout" (click)="logout()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Выход
+  </button>
 </nav>
 
 <main class="container">
   @if (isLoading) {
     <div class="loader-overlay">
       <div class="spinner"></div>
-      <p>SYNCING BIO-DATA...</p>
+      <p class="loader-text">SYNCING BIO-DATA...</p>
     </div>
   } @else {
     <div class="dashboard-grid">
-      
+
+      <!-- Stat Card: Calories -->
       <div class="glass-card stat-card">
         <span class="label">DAILY ENERGY</span>
         <div class="stat-value">
@@ -20,37 +44,93 @@
         <div class="progress-bar">
           <div class="fill" [style.width.%]="(data!.dailyCalories / data!.goalCalories) * 100"></div>
         </div>
-      </div>
-
-      <div class="glass-card form-card">
-        <h3>LOG ACTIVITY</h3>
-        <div class="input-stack">
-          <input type="text" [(ngModel)]="newWorkout.name" placeholder="Workout Name">
-          <input type="number" [(ngModel)]="newWorkout.duration" placeholder="Minutes">
-          <input type="number" [(ngModel)]="newWorkout.kcal_burn" placeholder="Calories">
-          <select [(ngModel)]="newWorkout.difficulty">
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-          </select>
-          <button class="btn-glow" (click)="saveWorkout()">APPEND LOG</button>
+        <div class="stat-footer">
+          <span>{{ ((data!.dailyCalories / data!.goalCalories) * 100).toFixed(0) }}% от цели</span>
         </div>
       </div>
 
+      <!-- Quick Actions -->
+      <div class="glass-card quick-actions-card">
+        <span class="label">БЫСТРЫЕ ДЕЙСТВИЯ</span>
+        <div class="action-buttons">
+          <a routerLink="/workouts" class="action-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M3 8h4M17 8h4M3 16h4M17 16h4"/></svg>
+            <span>Тренировки</span>
+          </a>
+          <a routerLink="/stats" class="action-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Статистика</span>
+          </a>
+          <a routerLink="/profile" class="action-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Профиль</span>
+          </a>
+          <a routerLink="/nutrition" class="action-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            <span>Питание</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Log Activity Form -->
+      <div class="glass-card form-card">
+        <h3 class="card-title">LOG ACTIVITY</h3>
+        <div class="input-stack">
+          <div class="input-group">
+            <label>Название</label>
+            <input type="text" [(ngModel)]="newWorkout.name" placeholder="Workout Name">
+          </div>
+          <div class="input-row">
+            <div class="input-group">
+              <label>Минуты</label>
+              <input type="number" [(ngModel)]="newWorkout.duration" placeholder="45">
+            </div>
+            <div class="input-group">
+              <label>Калории</label>
+              <input type="number" [(ngModel)]="newWorkout.kcal_burn" placeholder="300">
+            </div>
+          </div>
+          <div class="input-group">
+            <label>Сложность</label>
+            <select [(ngModel)]="newWorkout.difficulty" class="select-input">
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+          <button class="btn-glow" (click)="saveWorkout()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            APPEND LOG
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Records -->
       <div class="glass-card list-card col-span-2">
-        <h3>RECENT RECORDS</h3>
+        <div class="card-header">
+          <h3 class="card-title">RECENT RECORDS</h3>
+          <span class="record-count">{{ data?.recentWorkouts?.length || 0 }} записей</span>
+        </div>
         <div class="scroll-area">
           @for (item of data?.recentWorkouts; track item.id) {
             <div class="list-item">
               <div class="item-meta">
                 <span class="difficulty-tag" [attr.data-level]="item.difficulty">{{ item.difficulty }}</span>
-                <strong>{{ item.name }}</strong>
-                <small>{{ item.duration }}m • {{ item.kcal_burn }}kcal</small>
+                <div class="item-info">
+                  <strong>{{ item.name }}</strong>
+                  <small>{{ item.duration }}m &nbsp;·&nbsp; {{ item.kcal_burn }} kcal &nbsp;·&nbsp; {{ item.date }}</small>
+                </div>
               </div>
-              <button class="btn-delete" (click)="deleteWorkout(item.id!)">REMOVE</button>
+              <button class="btn-delete" (click)="deleteWorkout(item.id!)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                REMOVE
+              </button>
             </div>
           } @empty {
-            <div class="empty-state">No movements detected in the log.</div>
+            <div class="empty-state">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+              <p>No movements detected in the log.</p>
+            </div>
           }
         </div>
       </div>

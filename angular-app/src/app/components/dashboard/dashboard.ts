@@ -1,27 +1,41 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FitnessService } from '../../services/fitness.service';
-import { DashboardData, Workout } from '../../models/exercise.model';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+
+interface Workout {
+  id?: number;
+  name: string;
+  duration: number;
+  kcal_burn: number;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  date: string;
+}
+
+interface DashboardData {
+  dailyCalories: number;
+  goalCalories: number;
+  recentWorkouts: Workout[];
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class DashboardComponent implements OnInit{
+export class DashboardComponent implements OnInit {
   public authService = inject(AuthService);
-  
+
   data: DashboardData | null = null;
-  isLoading = false;
+  isLoading = true;
   actionError = '';
 
-  // Form model for [(ngModel)]
-  newWorkout: Workout = { 
-    id: 0, name: '', duration: 0, kcal_burn: 0, 
-    difficulty: 'Easy', date: new Date().toISOString() 
+  newWorkout: Workout = {
+    id: 0, name: '', duration: 0, kcal_burn: 0,
+    difficulty: 'Easy', date: new Date().toISOString()
   };
 
   ngOnInit() {
@@ -29,7 +43,6 @@ export class DashboardComponent implements OnInit{
   }
 
   simulateLoad() {
-    // Artificial delay to see the "Syncing" animation for just a second
     setTimeout(() => {
       this.data = {
         dailyCalories: 1420,
@@ -46,7 +59,7 @@ export class DashboardComponent implements OnInit{
   saveWorkout() {
     if (this.data && this.newWorkout.name) {
       const workoutToAdd = { ...this.newWorkout, id: Math.floor(Math.random() * 1000) };
-      this.data.recentWorkouts.unshift(workoutToAdd); // Add to local list
+      this.data.recentWorkouts.unshift(workoutToAdd);
       this.resetForm();
     }
   }
@@ -62,6 +75,9 @@ export class DashboardComponent implements OnInit{
   }
 
   private resetForm() {
-    this.newWorkout = { id: 0, name: '', duration: 0, kcal_burn: 0, difficulty: 'Easy', date: new Date().toISOString() };
+    this.newWorkout = {
+      id: 0, name: '', duration: 0, kcal_burn: 0,
+      difficulty: 'Easy', date: new Date().toISOString()
+    };
   }
 }
