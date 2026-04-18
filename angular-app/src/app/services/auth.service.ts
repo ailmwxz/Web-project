@@ -12,14 +12,12 @@ export class AuthService {
   private router = inject(Router);
   private apiUrl = 'https://api.fitnessapp.com/auth'; // Replace with your URL
 
-  // State management for user login status
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
 
   login(username: string, password: string): Observable<User> {
     return this.http.post<User>(`${this.apiUrl}/login`, { username, password }).pipe(
       tap(user => {
-        // Store JWT and user info in localStorage
         localStorage.setItem('fitness_token', user.token);
         localStorage.setItem('fitness_user', JSON.stringify(user));
         this.currentUserSubject.next(user);
@@ -37,6 +35,10 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem('fitness_token');
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.getToken();
   }
 
   private getUserFromStorage(): User | null {

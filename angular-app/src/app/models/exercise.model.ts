@@ -23,3 +23,15 @@ export interface DashboardData {
   goalCalories: number;
   recentWorkouts: Workout[];
 }
+
+export interface WorkoutExerciseItem {
+  exercise: number;
+  sets: number;
+  weight: number;
+}
+
+export interface CreateWorkoutPayload {
+  name: string;
+  date?: string;
+  exercises: WorkoutExerciseItem[];
+}

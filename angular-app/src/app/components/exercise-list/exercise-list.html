@@ -1,0 +1,146 @@
+<nav class="navbar">
+  <div class="logo">FITNESS<span>APP</span></div>
+
+  <div class="nav-links">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Дашборд</a>
+    <a routerLink="/workouts" routerLinkActive="active" class="nav-link">Тренировки</a>
+    <a routerLink="/stats" routerLinkActive="active" class="nav-link">Статистика</a>
+    <a routerLink="/profile" routerLinkActive="active" class="nav-link">Профиль</a>
+  </div>
+
+  <button class="btn-logout" (click)="logout()">Выход</button>
+</nav>
+
+<main class="activity-page">
+  <section class="page-top">
+    <div>
+      <h1>Activity Log</h1>
+      <p>Track your workouts</p>
+    </div>
+
+    <div class="active-today">
+      <span>Active Today</span>
+      <strong>{{ totalActiveMinutes }} min</strong>
+    </div>
+  </section>
+
+  <section class="activity-grid">
+    <div class="left-panel">
+      <div class="glass-card quick-card">
+        <h3>Quick Add</h3>
+
+        <div class="quick-buttons">
+          <button
+            class="quick-btn"
+            *ngFor="let activity of quickActivities"
+            (click)="openQuickActivityModal(activity)"
+          >
+            {{ activity.name }}
+          </button>
+        </div>
+      </div>
+
+      <button class="add-custom-btn" (click)="openCustomActivityModal()">
+        + Add Custom Activity
+      </button>
+    </div>
+
+    <div class="glass-card right-panel">
+      <div class="today-header">
+        <div>
+          <h3>Today’s Activities</h3>
+          <p>{{ todayWorkouts.length }} logged</p>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading" class="loading-box">Загрузка...</div>
+
+      <div *ngIf="!isLoading && todayWorkouts.length > 0" class="today-list">
+        <div class="activity-item" *ngFor="let item of todayWorkouts">
+          <div class="activity-left">
+            <div class="activity-icon">⏱</div>
+            <div class="activity-info">
+              <strong>{{ item.name }}</strong>
+              <span>{{ formatTime(item.date) }}</span>
+            </div>
+          </div>
+
+          <div class="activity-right">
+            <div class="metrics">
+              <strong>{{ item.duration }} min</strong>
+              <span>{{ item.kcal_burn }} kcal</span>
+            </div>
+
+            <button class="delete-btn" (click)="deleteWorkout(item.id)">
+              🗑
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading && todayWorkouts.length === 0" class="empty-state">
+        Сегодня активностей пока нет
+      </div>
+
+      <div class="total-row">
+        <span>Total Active Time</span>
+        <strong>{{ totalActiveMinutes }} minutes</strong>
+      </div>
+    </div>
+  </section>
+</main>
+
+@if (isModalOpen) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ isCustomMode ? 'Custom Activity' : 'Edit Activity' }}</h3>
+        <button class="modal-close" (click)="closeModal()">✕</button>
+      </div>
+
+      <p *ngIf="errorMessage" class="error-text">{{ errorMessage }}</p>
+
+      <div class="input-stack">
+        <div class="input-group">
+          <label>Activity Name *</label>
+          <input
+            type="text"
+            [(ngModel)]="formModel.name"
+            [placeholder]="isCustomMode ? 'e.g. Morning Run' : 'Edit activity name'"
+          />
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label>Duration (min) *</label>
+            <input type="number" [(ngModel)]="formModel.duration" min="0" />
+          </div>
+
+          <div class="input-group">
+            <label>Calories Burned *</label>
+            <input type="number" [(ngModel)]="formModel.kcal_burn" min="0" />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Difficulty</label>
+          <select [(ngModel)]="formModel.difficulty" class="select-input">
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-secondary" type="button" (click)="closeModal()">
+            Cancel
+          </button>
+
+          <button class="btn-primary" type="button" (click)="addActivity()">
+            Add Activity
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

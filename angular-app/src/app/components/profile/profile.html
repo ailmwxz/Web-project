@@ -1,0 +1,145 @@
+<nav class="navbar">
+  <div class="logo">FITNESS<span>APP</span></div>
+
+  <div class="nav-links">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Дашборд</a>
+    <a routerLink="/workouts" routerLinkActive="active" class="nav-link">Тренировки</a>
+    <a routerLink="/stats" routerLinkActive="active" class="nav-link">Статистика</a>
+    <a routerLink="/profile" routerLinkActive="active" class="nav-link">Профиль</a>
+  </div>
+
+  <button class="btn-logout" (click)="logout()">Выход</button>
+</nav>
+
+<main class="profile-page">
+  <section class="page-top">
+    <div>
+      <h1>Profile</h1>
+      <p>Manage your settings</p>
+    </div>
+  </section>
+
+  <section class="profile-grid">
+    <div class="glass-card profile-card">
+      <div class="profile-header">
+        <div class="profile-avatar">👤</div>
+        <div class="profile-intro">
+          <h2>{{ displayName }}</h2>
+          <p>Member since {{ profile.memberSince }}</p>
+        </div>
+      </div>
+
+      <div class="profile-fields">
+        <div class="info-item">
+          <div class="info-icon">📅</div>
+          <div class="info-text">
+            <span>Age</span>
+            <strong>{{ profile.age ?? '—' }} years</strong>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">⚖️</div>
+          <div class="info-text">
+            <span>Weight</span>
+            <strong>{{ profile.weight ?? '—' }} kg</strong>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">📏</div>
+          <div class="info-text">
+            <span>Height</span>
+            <strong>{{ profile.height ?? '—' }} cm</strong>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">🎯</div>
+          <div class="info-text">
+            <span>Goal</span>
+            <strong>{{ profile.goal || '—' }}</strong>
+          </div>
+        </div>
+      </div>
+
+      <button class="edit-btn" (click)="openEditProfile()">
+        Edit Profile
+      </button>
+    </div>
+
+    <div class="right-column">
+      <div class="glass-card stats-card">
+        <h3>Your Stats</h3>
+
+        <div class="stats-grid single-stat">
+            <div class="stat-box">
+                <div class="stat-value">{{todayActivities}}</div>
+                <div class="stat-label">Activities Today</div>
+            </div>
+        </div>
+      </div>
+
+      <button class="logout-panel-btn" (click)="logout()">
+        Logout
+      </button>
+    </div>
+  </section>
+</main>
+
+@if (isEditModalOpen) {
+  <div class="modal-backdrop" (click)="closeEditProfile()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Edit Profile</h3>
+        <button class="modal-close" (click)="closeEditProfile()">✕</button>
+      </div>
+
+      <div class="input-stack">
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" [value]="displayName" disabled />
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label>Age</label>
+            <input type="number" [(ngModel)]="editForm.age" min="0" />
+          </div>
+
+          <div class="input-group">
+            <label>Weight (kg)</label>
+            <input type="number" [(ngModel)]="editForm.weight" min="0" />
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label>Height (cm)</label>
+            <input type="number" [(ngModel)]="editForm.height" min="0" />
+          </div>
+
+          <div class="input-group">
+            <label>Member Since</label>
+            <input type="text" [(ngModel)]="editForm.memberSince" />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Goal</label>
+          <input type="text" [(ngModel)]="editForm.goal" placeholder="e.g. Build muscle" />
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-secondary" type="button" (click)="closeEditProfile()">
+            Cancel
+          </button>
+
+          <button class="btn-primary" type="button" (click)="saveProfile()">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
