@@ -1,1 +1,46 @@
-<p>stats works!</p>
+<nav class="navbar">
+  <div class="logo">FITNESS<span>APP</span></div>
+
+  <div class="nav-links">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Дашборд</a>
+    <a routerLink="/workouts" routerLinkActive="active" class="nav-link">Тренировки</a>
+    <a routerLink="/stats" routerLinkActive="active" class="nav-link">Статистика</a>
+    <a routerLink="/profile" routerLinkActive="active" class="nav-link">Профиль</a>
+  </div>
+
+  <button class="btn-logout">Выход</button>
+</nav>
+
+<main class="stats-page">
+  <section class="page-top">
+    <h1>Statistics</h1>
+    <p>Track your weekly fitness progress</p>
+  </section>
+
+  <section class="stats-grid">
+    <div class="glass-card stat-box">
+      <h3>Weekly Calories</h3>
+      <div class="big">{{ totalCalories }}</div>
+      <div class="stat-subtext">Calories burned this week</div>
+    </div>
+
+    <div class="glass-card stat-box">
+      <h3>Weekly Workouts</h3>
+      <div class="big">{{ weeklyWorkouts }}</div>
+      <div class="stat-subtext">Sessions completed this week</div>
+    </div>
+
+    <div class="glass-card stat-box">
+      <h3>BMI</h3>
+      <div class="big">{{ bmi ?? '—' }}</div>
+      <div class="stat-subtext">Based on your profile data</div>
+    </div>
+  </section>
+
+  <section class="glass-card chart-card">
+    <h3>Weekly Progress</h3>
+    <div class="chart-wrap">
+      <canvas #caloriesChart></canvas>
+    </div>
+  </section>
+</main>
