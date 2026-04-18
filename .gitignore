@@ -1,0 +1,14 @@
+# Фронтенд (твоя папка angular-app)
+angular-app/node_modules/
+angular-app/.angular/
+angular-app/dist/
+
+# Бэкенд
+backend/venv/
+backend/.venv/
+**/__pycache__/
+backend/db.sqlite3
+
+# Системное
+.DS_Store
+.vscode/
