@@ -1,15 +1,18 @@
 import requests
 import json
 import os
+from django.db import models
 from dotenv import load_dotenv
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework import generics
 
 from .models import Profile, Exercise, WorkoutLog, WorkoutSet, DailyMetric
 from .serializers import (
@@ -124,8 +127,9 @@ def get_ai_advice(request):
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        profile = get_object_or_404(Profile, user=request.user)
-        return Response(ProfileSerializer(profile).data)
+        profile, created = Profile.objects.get_or_create(user=request.user)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
     def put(self, request):
         profile = get_object_or_404(Profile, user=request.user)
         serializer = ProfileSerializer(profile, data=request.data, partial=True)
@@ -153,3 +157,81 @@ class WorkoutDetailView(APIView):
     def delete(self, request, pk):
         self._get_obj(pk, request.user).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class DailyMetricView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        today = timezone.now().date()
+        metric = DailyMetric.objects.filter(user=request.user, date=today).first()
+        
+        data = {
+            "calories": metric.calories_consumed if metric else 0,
+            "sleep": metric.sleep_hours if metric else 0,
+            "workoutDone": metric.workout_done if metric else False
+        }
+        return Response(data)
+
+    def post(self, request):
+        today = timezone.now().date()
+        
+        metric, created = DailyMetric.objects.update_or_create(
+            user=request.user, 
+            date=today,
+            defaults={
+                'calories_consumed': request.data.get('calories', 0),
+                'sleep_hours': request.data.get('sleep', 0),
+                'workout_done': request.data.get('workoutDone', False)
+            }
+        )
+        
+        return Response({
+            "status": "updated" if not created else "created",
+            "date": today
+        })
+
+class ExerciseView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        exercises = Exercise.objects.filter(
+            models.Q(created_by__isnull=True) | models.Q(created_by=request.user)
+        ).order_by('name')
+        serializer = ExerciseSerializer(exercises, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ExerciseSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(created_by=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class WorkoutSetView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = WorkoutSetSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, pk):
+        set_obj = get_object_or_404(WorkoutSet, pk=pk, workout__user=request.user)
+        set_obj.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class WorkoutSetCreateView(generics.CreateAPIView):
+    queryset = WorkoutSet.objects.all()
+    serializer_class = WorkoutSetSerializer
+
+    def post(self, request, *args, **kwargs):
+        print("DEBUG DATA:", request.data) 
+        
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        print("DEBUG ERRORS:", serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

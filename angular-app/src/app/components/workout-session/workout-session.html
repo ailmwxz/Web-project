@@ -1,0 +1,58 @@
+<nav class="navbar">
+  <div class="logo">FITNESS<span>APP</span></div>
+  <button class="btn-logout" (click)="finish()">Завершить</button>
+</nav>
+
+<main class="page-wrapper">
+  <div class="page-container">
+    
+    <header class="page-header">
+      <h1>ACTIVE <span>SESSION</span></h1>
+      <p>Записывай подходы в реальном времени</p>
+    </header>
+
+    <div class="workout-grid-layout">
+      <div class="glass-card">
+        <div class="input-stack">
+          <div class="input-group">
+            <label>Упражнение</label>
+            <select class="custom-select" [(ngModel)]="selectedExerciseId">
+              <option value="" disabled>Выберите из списка...</option>
+              @for (ex of exercises; track ex.id) {
+                <option [value]="ex.id.toString()">{{ ex.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label>Повторы</label>
+              <input type="number" [(ngModel)]="reps" placeholder="0">
+            </div>
+            <div class="input-group">
+              <label>Вес (кг)</label>
+              <input type="number" [(ngModel)]="weight" placeholder="0">
+            </div>
+          </div>
+
+          <button class="btn-primary" (click)="logSet()">LOG SET</button>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <h3 style="margin-top: 0; font-size: 1rem; color: #71717a;">ТЕКУЩИЕ ПОДХОДЫ</h3>
+        <div class="added-sets-list">
+          @for (set of addedSets; track $index) {
+            <div class="set-row">
+              <span class="ex-name">{{ set.name }}</span>
+              <span class="ex-stats">{{ set.reps }} <small>x</small> {{ set.weight }} <small>kg</small></span>
+            </div>
+          } @empty {
+            <p style="color: #3f3f46; text-align: center;">Пока ни одного подхода...</p>
+          }
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>

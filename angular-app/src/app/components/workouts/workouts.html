@@ -1,0 +1,68 @@
+<nav class="navbar">
+  <div class="logo">FITNESS<span>APP</span></div>
+  <div class="nav-links">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Дашборд</a>
+    <a routerLink="/workouts" routerLinkActive="active" class="nav-link">Тренировки</a>
+    <a routerLink="/stats" routerLinkActive="active" class="nav-link">Статистика</a>
+    <a routerLink="/profile" routerLinkActive="active" class="nav-link">Профиль</a>
+  </div>
+  <button class="btn-logout" (click)="logout()">Выход</button>
+</nav>
+
+<main class="page-wrapper">
+  <div class="page-container">
+    
+    @if (isLoading) {
+      <div class="loader-overlay"><div class="spinner"></div></div>
+    } @else {
+      <header class="page-header">
+        <h1>WORKOUT <span>JOURNAL</span></h1>
+        <button class="btn-new-session" (click)="startNewSession()">+ NEW SESSION</button>
+      </header>
+
+      <div class="workouts-grid">
+        @for (workout of workouts; track workout.id) {
+          <div class="workout-card" 
+               (click)="goToWorkout(workout.id)" 
+               style="cursor: pointer;">
+            
+            <div class="card-top">
+              <div>
+                <span class="workout-date">{{ workout.start_time | date:'dd.MM.yyyy · HH:mm' }}</span>
+                <h3 class="workout-title">{{ workout.title }}</h3>
+              </div>
+              
+              <button class="btn-delete-workout" 
+                      (click)="$event.stopPropagation(); deleteWorkout(workout.id)">
+                ✕
+              </button>
+            </div>
+
+            <div class="sets-container">
+              @for (set of workout.sets; track set.id) {
+                <div class="set-row">
+                  <span class="ex-name">{{ set.exercise_name }}</span>
+                  <span class="ex-stats">
+                    {{ set.reps }} <small>reps</small> × {{ set.weight || 0 }} <small>kg</small>
+                  </span>
+                </div>
+              } @empty {
+                <div class="workout-date" style="text-align: center; padding: 1rem;">Нет записей</div>
+              }
+            </div>
+
+            @if (workout.notes) {
+              <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                <p style="font-size: 0.8rem; color: #71717a; font-style: italic;">"{{ workout.notes }}"</p>
+              </div>
+            }
+          </div>
+        } @empty {
+          <div class="workout-card" style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+            <p style="color: #a1a1aa;">Тут пока пусто. Время сделать первый подход!</p>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</main>

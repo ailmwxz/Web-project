@@ -1,0 +1,41 @@
+<nav class="navbar">
+  <div class="logo">FITNESS<span>APP</span></div>
+  <div class="nav-links">
+    <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Дашборд</a>
+    <a routerLink="/workouts" routerLinkActive="active" class="nav-link">Тренировки</a>
+    <a routerLink="/stats" routerLinkActive="active" class="nav-link">Статистика</a>
+    <a routerLink="/profile" routerLinkActive="active" class="nav-link">Профиль</a>
+  </div>
+  <button class="btn-logout" (click)="logout()">Выход</button>
+</nav>
+
+<main class="container">
+  <div class="coach-centered-layout">
+    <div class="glass-card ai-main-card">
+      <div class="ai-status-bar">
+        <span class="status-dot" [class.pulse]="isLoading"></span>
+        <span class="label">{{ isLoading ? 'NEURAL LINK ACTIVE' : 'SYSTEM READY' }}</span>
+      </div>
+
+      <div class="ai-content">
+        @if (isLoading) {
+          <div class="loading-state">
+            <div class="spinner"></div>
+            <p class="loader-text">Анализирую твои данные за сегодня...</p>
+          </div>
+        } @else {
+          <h1 class="advice-text">"{{ advice }}"</h1>
+          
+          <div class="debug-panel">
+            <span class="label">Входящие био-данные:</span>
+            <code>{{ debugInfo }}</code>
+          </div>
+
+          <button class="btn-glow" (click)="getAdvice()" [disabled]="isLoading">
+            ПЕРЕГЕНЕРИРОВАТЬ СОВЕТ
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</main>

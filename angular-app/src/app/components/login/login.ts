@@ -1,33 +1,36 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms'; 
-import { Router } from '@angular/router'; 
-import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common'; 
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.html',
-  styleUrl: './login.css'
+  styleUrls: ['./login.css']
 })
 export class LoginComponent {
-  loginData = {
-    username: '',
-    password: ''
-  };
+  loginData = { username: '', password: '' };
+  errorMessage = '';
 
-  errorMessage: string = '';
-
-  constructor(private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onLogin() {
-    // пока нет бека "фейк" проверка
-    if (this.loginData.username === 'admin' && this.loginData.password === '12345') {
-      console.log('Успешный вход!');
-      // В будущем тут будет запись JWT токена в LocalStorage
-      this.router.navigate(['/dashboard']); 
-    } else {
-      this.errorMessage = 'Неверное имя пользователя или пароль';
-    }
+  if (this.loginData.username && this.loginData.password) {
+    this.authService.login(this.loginData.username, this.loginData.password).subscribe({
+      next: (res) => {
+        console.log('Успешный вход!', res);
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.errorMessage = err.message || 'Ошибка доступа';
+        console.error(err);
+      }
+    });
+  } else {
+    this.errorMessage = 'Заполните все поля';
   }
+}
 }

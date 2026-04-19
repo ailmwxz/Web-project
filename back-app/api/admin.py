@@ -3,7 +3,7 @@ from .models import User, Profile, Exercise, WorkoutLog, WorkoutSet, DailyMetric
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin): 
-    list_display = ('user', 'gender', 'age', 'weight', 'goal')
+    list_display = ('user', 'gender', 'age', 'weight','height', 'goal')
     search_fields = ('user__username',)
 
 @admin.register(Exercise)
@@ -25,7 +25,7 @@ class WorkoutLogAdmin(admin.ModelAdmin):
 
 @admin.register(DailyMetric)
 class DailyMetricAdmin(admin.ModelAdmin):
-    list_display = ('user', 'date', 'calories_consumed', 'sleep_hours')
+    list_display = ('user', 'date', 'calories_consumed', 'sleep_hours', 'workout_done')
     list_filter = ('date', 'user')
 
 @admin.register(WorkoutSet)

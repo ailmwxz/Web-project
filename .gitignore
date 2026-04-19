@@ -7,8 +7,9 @@ angular-app/dist/
 backend/venv/
 backend/.venv/
 **/__pycache__/
-backend/db.sqlite3
+db.sqlite3
 
 # Системное
 .DS_Store
 .vscode/
+.env 

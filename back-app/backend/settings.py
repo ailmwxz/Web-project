@@ -64,6 +64,7 @@ WSGI_APPLICATION = "backend.wsgi.application"
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication', 
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -133,3 +134,12 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization", # <--- ЭТО ДОЛЖНО БЫТЬ ТУТ
+    "content-type",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]

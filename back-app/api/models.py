@@ -1,21 +1,24 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 #Профиль пользователя
 class Profile(models.Model):
     GOALS = [
-        ('muscle gain', 'Набор массы'),
-        ('power', 'Силовая'),
-        ('cardio', 'Кардио / Выносливость'),
-        ('weight_loss', 'Похудение'),
+        ('Muscle gain', 'Набор массы'),
+        ('Power', 'Силовая'),
+        ('Сardio', 'Кардио / Выносливость'),
+        ('Weight_loss', 'Похудение'),
+        ('Maintenance', 'Поддержание формы')
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     weight = models.FloatField(null=True, blank=True)
-    goal = models.CharField(max_length=20, choices=GOALS, default='power')    
+    height = models.FloatField(null=True, blank=True)
+    goal = models.CharField(max_length=20, choices=GOALS, default='power')
     age = models.PositiveIntegerField(null=True, blank=True)
     bio = models.TextField(blank=True, default='')
-    GENDER_CHOICES = [('Man', 'Мужчина'), ('Woman', 'Женщина'),('other', 'Другой'),]
-    gender = models.CharField(max_length=10, choices = GENDER_CHOICES)
+    GENDER_CHOICES = [('Man', 'Мужчина'), ('Woman', 'Женщина'),('Other', 'Другой'),]
+    gender = models.CharField(max_length=10, choices = GENDER_CHOICES, null=True, blank=True)
 
     def __str__(self):
         return f'Profile({self.user.username})'
@@ -23,7 +26,7 @@ class Profile(models.Model):
 #Дневные показатели
 class DailyMetric(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField()
+    date = models.DateField(default=timezone.now)
     calories_consumed = models.IntegerField(default=0)
     sleep_hours = models.FloatField(default=0)
     workout_done = models.BooleanField(default=False)
@@ -34,13 +37,13 @@ class DailyMetric(models.Model):
 #Упражнение
 class Exercise(models.Model):
     CATEGORY_CHOICES = [
-        ('chest',    'Грудь'),
-        ('back',     'Спина'),
-        ('legs',     'Ноги'),
-        ('arms',     'Руки'),
-        ('shoulders','Плечи'),
-        ('cardio',   'Кардио'),
-        ('core',     'Пресс'),
+        ('Chest',    'Грудь'),
+        ('Back',     'Спина'),
+        ('Legs',     'Ноги'),
+        ('Arms',     'Руки'),
+        ('Shoulders','Плечи'),
+        ('Cardio',   'Кардио'),
+        ('Core',     'Пресс'),
         ]
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True)

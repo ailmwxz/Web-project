@@ -38,12 +38,14 @@ class RegisterSerializer(serializers.Serializer):
 
 #ModelSerializers
 class ProfileSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username', read_only=True)
+    memberSince = serializers.DateTimeField(source='user.date_joined', format="%B %Y", read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)    
     email    = serializers.CharField(source='user.email',    read_only=True)
 
     class Meta:
         model  = Profile
-        fields = ['username', 'email', 'weight', 'goal', 'age', 'bio', 'gender']
+        fields = ['username', 'email', 'weight', 'height', 'goal', 'age', 'bio', 'gender', 'memberSince']
+        read_only_fields = ['user']
 
 class ExerciseSerializer(serializers.ModelSerializer):
     class Meta:
@@ -52,22 +54,22 @@ class ExerciseSerializer(serializers.ModelSerializer):
 
 
 class WorkoutSetSerializer(serializers.ModelSerializer):
-    exercise_name = serializers.CharField(source='exercise.name', read_only=True)
+    exercise_name = serializers.ReadOnlyField(source='exercise.name')
 
     class Meta:
-        model  = WorkoutSet
-        fields = ['id', 'exercise', 'exercise_name', 'reps', 'weight', 'set_number']
-
+        model = WorkoutSet
+        fields = ['id', 'workout', 'exercise', 'exercise_name', 'reps', 'weight']
 
 class WorkoutLogSerializer(serializers.ModelSerializer):
-    sets = WorkoutSetSerializer(many=True)
+    sets = WorkoutSetSerializer(many=True, read_only=True)
 
     class Meta:
-        model  = WorkoutLog
-        fields = ['id', 'title', 'start_time', 'end_time', 'notes', 'sets']
+        model = WorkoutLog
+        fields = ['id', 'title', 'start_time', 'user', 'sets']
+        read_only_fields = ['user']
     
     def create(self, validated_data):
-        sets_data = validated_data.pop('sets')
+        sets_data = validated_data.pop('sets', []) 
         workout = WorkoutLog.objects.create(**validated_data)
         for set_data in sets_data:
             WorkoutSet.objects.create(workout=workout, **set_data)

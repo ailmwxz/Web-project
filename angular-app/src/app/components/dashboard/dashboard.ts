@@ -1,83 +1,107 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-
-interface Workout {
-  id?: number;
-  name: string;
-  duration: number;
-  kcal_burn: number;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  date: string;
-}
-
-interface DashboardData {
-  dailyCalories: number;
-  goalCalories: number;
-  recentWorkouts: Workout[];
-}
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css'
+  styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit {
-  public authService = inject(AuthService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  data: DashboardData | null = null;
   isLoading = true;
-  actionError = '';
+  
+  data: any = { 
+    dailyCalories: 0, 
+    goalCalories: 2500, 
+    recentWorkouts: [] 
+  };
 
-  newWorkout: Workout = {
-    id: 0, name: '', duration: 0, kcal_burn: 0,
-    difficulty: 'Easy', date: new Date().toISOString()
+  dailyMetrics = { 
+    calories: 0, 
+    sleep: 0, 
+    workoutDone: false 
+  };
+
+  quickCardio = {
+    type: '',
+    duration: null as number | null,
+    kcal: null as number | null
   };
 
   ngOnInit() {
-    this.simulateLoad();
+    this.loadData();
   }
 
-  simulateLoad() {
-    setTimeout(() => {
-      this.data = {
-        dailyCalories: 1420,
-        goalCalories: 2200,
-        recentWorkouts: [
-          { id: 101, name: 'Power Yoga', duration: 40, kcal_burn: 210, difficulty: 'Easy', date: '2026-04-15' },
-          { id: 102, name: 'Deadlift Session', duration: 55, kcal_burn: 480, difficulty: 'Hard', date: '2026-04-16' }
-        ]
-      };
-      this.isLoading = false;
-    }, 800);
+  loadData() {
+    this.isLoading = true;
+    this.authService.getDashboardData().subscribe({
+      next: (res: any) => {
+        this.data = res;
+        this.authService.getDailyMetrics().subscribe({
+          next: (m: any) => {
+            if (m) {
+              this.dailyMetrics = {
+                calories: m.calories || 0,
+                sleep: m.sleep || 0,
+                workoutDone: m.workoutDone || false
+              };
+              // СИНХРОНИЗАЦИЯ: Чтобы прогресс-бар сверху видел калории из метрик
+              this.data.dailyCalories = this.dailyMetrics.calories;
+            }
+            this.isLoading = false;
+          },
+          error: () => this.isLoading = false
+        });
+      },
+      error: () => this.isLoading = false
+    });
   }
 
-  saveWorkout() {
-    if (this.data && this.newWorkout.name) {
-      const workoutToAdd = { ...this.newWorkout, id: Math.floor(Math.random() * 1000) };
-      this.data.recentWorkouts.unshift(workoutToAdd);
-      this.resetForm();
-    }
+  saveDailyMetrics() {
+    this.authService.updateDailyMetrics(this.dailyMetrics).subscribe({
+      next: () => {
+        alert('Статус дня обновлен!');
+        this.loadData(); 
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  addQuickCardio() {
+    if (!this.quickCardio.type) return;
+
+    const workoutTitle = `🏃 ${this.quickCardio.type} (${this.quickCardio.duration || 0}m)`;
+    
+    this.authService.createWorkout(workoutTitle).subscribe({
+      next: () => {
+        // Опционально: прибавляем ккал кардио к дневным метрикам
+        if (this.quickCardio.kcal) {
+          this.dailyMetrics.calories += this.quickCardio.kcal;
+          this.authService.updateDailyMetrics(this.dailyMetrics).subscribe(() => this.loadData());
+        } else {
+          this.loadData();
+        }
+        this.quickCardio = { type: '', duration: null, kcal: null };
+      }
+    });
   }
 
   deleteWorkout(id: number) {
-    if (this.data) {
-      this.data.recentWorkouts = this.data.recentWorkouts.filter(w => w.id !== id);
+    if (confirm('Удалить запись?')) {
+      this.authService.deleteWorkout(id).subscribe({
+        next: () => this.loadData()
+      });
     }
   }
 
   logout() {
     this.authService.logout();
-  }
-
-  private resetForm() {
-    this.newWorkout = {
-      id: 0, name: '', duration: 0, kcal_burn: 0,
-      difficulty: 'Easy', date: new Date().toISOString()
-    };
   }
 }

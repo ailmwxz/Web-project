@@ -1,62 +1,51 @@
-
-
 <div class="login-page">
-    <!-- <a routerLink="/home" class="back-to-home">
-    <span class="arrow">←  </span> На главную</a> -->
-    <nav class="full-nav-bar">
-    <div class="nav-container">
-      <a routerLink="/home" class="nav-item">Главная</a>
-      <span class="nav-divider">/</span>
-      <a routerLink="/categories" class="nav-item">Категории</a>
-      <span class="nav-divider">/</span>
-      <span class="nav-item current">Авторизация</span>
-    </div>
-  </nav>
-
-  <a routerLink="/home" class="back-link-simple">← Назад</a>
-
-
-
+  <div class="bg-glow"></div>
+  
   <div class="login-card">
     <div class="logo">
-      <h1>FitnessApp 🏛</h1>
+      FITNESS<span>APP</span>🏛
     </div>
-    
-    <p class="subtitle">Добро пожаловать в команду!</p>
-
+    <div class="title-block">
+  <h2 class="card-title">IDENTIFICATION REQUIRED</h2>
+  <p class="subtitle">Добро пожаловать в команду</p>
+    </div>
     <form (ngSubmit)="onLogin()">
-      <div class="input-group">
-        <label>Логин</label>
-        <input 
-          type="text" 
-          name="username" 
-          [(ngModel)]="loginData.username" 
-          placeholder="Твой никнейм"
-          required>
-      </div>
+      <div class="input-stack">
+        <div class="input-group">
+          <label>ACCESS KEY (USERNAME)</label>
+          <input 
+            type="text" 
+            name="username" 
+            [(ngModel)]="loginData.username" 
+            placeholder="Username"
+            required>
+        </div>
 
-      <div class="input-group">
-        <label>Пароль</label>
-        <input 
-          type="password" 
-          name="password" 
-          [(ngModel)]="loginData.password" 
-          placeholder="••••••••"
-          required>
+        <div class="input-group">
+          <label>PASSWORD</label>
+          <input 
+            type="password" 
+            name="password" 
+            [(ngModel)]="loginData.password" 
+            placeholder="••••••••"
+            required>
+        </div>
       </div>
 
       @if (errorMessage) {
         <div class="error-alert">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           {{ errorMessage }}
         </div>
       }
 
-      <button type="submit" class="login-btn">ВОЙТИ</button>
+      <button type="submit" class="btn-glow">
+        Log In
+      </button>
     </form>
     
     <div class="footer-links">
-      <a href="#">Забыли пароль?</a>
-      <span>Нет аккаунта? <a href="#">Регистрация</a></span>
+      <span>NEW USER? <a routerLink="/register">CREATE ACCOUNT</a></span>
     </div>
   </div>
 </div>

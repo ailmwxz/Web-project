@@ -15,7 +15,7 @@
   <section class="page-top">
     <div>
       <h1>Profile</h1>
-      <p>Manage your settings</p>
+      <p>Manage your settings and fitness goals</p>
     </div>
   </section>
 
@@ -25,7 +25,7 @@
         <div class="profile-avatar">👤</div>
         <div class="profile-intro">
           <h2>{{ displayName }}</h2>
-          <p>Member since {{ profile.memberSince }}</p>
+          <p>Member since {{ profile.memberSince || '—' }}</p>
         </div>
       </div>
 
@@ -55,6 +55,14 @@
         </div>
 
         <div class="info-item">
+          <div class="info-icon">🧬</div>
+          <div class="info-text">
+            <span>Gender</span>
+            <strong>{{ profile.gender || 'Not specified' }}</strong>
+          </div>
+        </div>
+
+        <div class="info-item">
           <div class="info-icon">🎯</div>
           <div class="info-text">
             <span>Goal</span>
@@ -71,17 +79,16 @@
     <div class="right-column">
       <div class="glass-card stats-card">
         <h3>Your Stats</h3>
-
         <div class="stats-grid single-stat">
             <div class="stat-box">
-                <div class="stat-value">{{todayActivities}}</div>
+                <div class="stat-value">{{ todayActivities }}</div>
                 <div class="stat-label">Activities Today</div>
             </div>
         </div>
       </div>
 
       <button class="logout-panel-btn" (click)="logout()">
-        Logout
+        Logout from System
       </button>
     </div>
   </section>
@@ -91,55 +98,63 @@
   <div class="modal-backdrop" (click)="closeEditProfile()">
     <div class="modal-card" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>Edit Profile</h3>
+        <h3>Edit Profile Details</h3>
         <button class="modal-close" (click)="closeEditProfile()">✕</button>
       </div>
 
       <div class="input-stack">
         <div class="input-group">
-          <label>Username</label>
+          <label>Identifier (Username)</label>
           <input type="text" [value]="displayName" disabled />
         </div>
 
         <div class="input-row">
           <div class="input-group">
             <label>Age</label>
-            <input type="number" [(ngModel)]="editForm.age" min="0" />
+            <input type="number" [(ngModel)]="editForm.age" min="0" placeholder="Years" />
           </div>
-
           <div class="input-group">
             <label>Weight (kg)</label>
-            <input type="number" [(ngModel)]="editForm.weight" min="0" />
+            <input type="number" [(ngModel)]="editForm.weight" min="0" placeholder="kg" />
           </div>
         </div>
 
         <div class="input-row">
           <div class="input-group">
             <label>Height (cm)</label>
-            <input type="number" [(ngModel)]="editForm.height" min="0" />
+            <input type="number" [(ngModel)]="editForm.height" min="0" placeholder="cm" />
           </div>
-
           <div class="input-group">
-            <label>Member Since</label>
-            <input type="text" [(ngModel)]="editForm.memberSince" />
+            <label>Gender</label>
+            <select [(ngModel)]="editForm.gender" class="custom-select">
+              <option value="" disabled selected>Select gender</option>
+              <option value="Man">Мужчина</option>
+              <option value="Woman">Женщина</option>
+              <option value="Other">Другой</option>
+            </select>
           </div>
         </div>
 
         <div class="input-group">
-          <label>Goal</label>
-          <input type="text" [(ngModel)]="editForm.goal" placeholder="e.g. Build muscle" />
+          <label>Fitness Goal</label>
+          <select [(ngModel)]="editForm.goal" class="custom-select">
+            <option value="muscle_gain">Набор массы</option>
+  <option value="Muscle gain">Набор массы</option>
+  <option value="Power">Силовая</option>
+  <option value="Сardio">Кардио</option>
+  <option value="Weight_loss">Похудение</option>
+  <option value="Maintenance">Поддержание формы</option>
+          </select>
         </div>
 
         <div class="form-actions">
           <button class="btn-secondary" type="button" (click)="closeEditProfile()">
             Cancel
           </button>
-
           <button class="btn-primary" type="button" (click)="saveProfile()">
             Save Changes
           </button>
         </div>
-      </div>
-    </div>
+      </div> </div>
   </div>
 }
