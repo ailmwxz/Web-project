@@ -24,23 +24,24 @@ export class AuthService {
   }
 
   // --- AUTH ---
-  login(username: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login/`, { username, password }).pipe(
-      tap(response => {
-        if (response.token) {
-          const userData: User = {
-            id: response.user_id || 0,
-            username: username,
-            token: response.token
-          };
-          localStorage.setItem('fitness_token', response.token);
-          localStorage.setItem('fitness_user', JSON.stringify(userData));
-          this.currentUserSubject.next(userData);
-        }
-      }),
-      catchError(this.handleError)
-    );
-  }
+  login(credentials: { username: string, password: string }): Observable<any> {
+  // Теперь credentials — это объект, и мы его целиком шлем в POST
+  return this.http.post<any>(`${this.apiUrl}/login/`, credentials).pipe(
+    tap(response => {
+      if (response.token) {
+        const userData: User = {
+          id: response.user_id || 0,
+          username: credentials.username, // берем из входных данных
+          token: response.token
+        };
+        localStorage.setItem('fitness_token', response.token);
+        localStorage.setItem('fitness_user', JSON.stringify(userData));
+        this.currentUserSubject.next(userData);
+      }
+    }),
+    catchError(this.handleError)
+  );
+}
 
   logout(): void {
     localStorage.removeItem('fitness_token');

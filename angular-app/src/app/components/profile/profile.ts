@@ -78,39 +78,44 @@ loadProfile(): void {
 }
 
 saveProfile(): void {
-  // 1. Копируем данные из формы
+  // 1. Создаем чистую копию
   const dataToSend: any = { ...this.editForm };
 
-  // 2. ЧИСТКА: Удаляем поля, которые Django запрещает менять (Read-only)
-  // Именно они чаще всего дают ошибку 400 при методе PUT
+  // 2. УДАЛЯЕМ READ-ONLY ПОЛЯ (Критично!)
   delete dataToSend.memberSince;
   delete dataToSend.username;
   delete dataToSend.email;
 
-  // 3. ПРЕОБРАЗОВАНИЕ ТИПОВ: Инпуты всегда шлют строки, а нам нужны числа или null
+  // 3. ПРЕОБРАЗУЕМ В ЧИСЛА (Django Models этого требуют)
   dataToSend.age = dataToSend.age ? Number(dataToSend.age) : null;
   dataToSend.weight = dataToSend.weight ? Number(dataToSend.weight) : null;
   dataToSend.height = dataToSend.height ? Number(dataToSend.height) : null;
 
-  // 4. ГИГИЕНА СТРОК: Не шлем пустые строки в Choices
-  if (!dataToSend.gender || dataToSend.gender.trim() === '') {
-    delete dataToSend.gender; 
+  // 4. ВАЛИДАЦИЯ CHOICES (Gender и Goal)
+  const validGenders = ['Man', 'Woman', 'Other'];
+  if (!dataToSend.gender || !validGenders.includes(dataToSend.gender)) {
+    delete dataToSend.gender; // Если пусто или не то — не шлем вообще
   }
-  if (!dataToSend.goal || dataToSend.goal.trim() === '') {
+
+  // ВАЖНО: Проверь, чтобы эти строки СИМВОЛ В СИМВОЛ совпадали с Django (models.py)
+  const validGoals = ['Muscle gain', 'Power', 'Сardio', 'Weight_loss', 'Maintenance'];
+  if (!dataToSend.goal || !validGoals.includes(dataToSend.goal)) {
     delete dataToSend.goal;
   }
 
-  console.log('Финальные данные перед отправкой:', dataToSend);
+  console.log('Отправляем на сервер:', dataToSend);
 
   this.authService.updateProfile(dataToSend).subscribe({
     next: (updatedData) => {
-      this.profile = updatedData; 
+      this.profile = updatedData;
       this.isEditModalOpen = false;
-      alert('Профиль успешно обновлен!');
+      alert('Profile updated successfully!');
     },
     error: (err) => {
-      console.error('Сервер ругается на:', err.error);
-      alert('Ошибка 400: ' + JSON.stringify(err.error));
+      // Если 400 не исчезнет, этот алерт покажет точное поле-виновника
+      console.error('Django Error Details:', err.error);
+      const serverError = JSON.stringify(err.error);
+      alert('Server refused data: ' + serverError);
     }
   });
 }
