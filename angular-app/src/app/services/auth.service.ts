@@ -15,75 +15,66 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  // Помогашка для заголовков, чтобы не дублировать код
-  private getHeaders(): { headers: HttpHeaders } {
-    const token = localStorage.getItem('fitness_token');
-    return {
-      headers: new HttpHeaders().set('Authorization', `Token ${token}`)
-    };
-  }
+getHeaders() {
+  const token = localStorage.getItem('fitness_token');
+  return {
+    headers: new HttpHeaders({
+      'Authorization': `Bearer ${token}` 
+    })
+  };
+}
 
   // --- AUTH ---
-  login(credentials: { username: string, password: string }): Observable<any> {
-  // Теперь credentials — это объект, и мы его целиком шлем в POST
+login(credentials: any): Observable<any> {
   return this.http.post<any>(`${this.apiUrl}/login/`, credentials).pipe(
-    tap(response => {
-      if (response.token) {
-        const userData: User = {
-          id: response.user_id || 0,
-          username: credentials.username, // берем из входных данных
-          token: response.token
-        };
-        localStorage.setItem('fitness_token', response.token);
+    tap(res => {
+      if (res.access) {
+        localStorage.setItem('fitness_token', res.access);
+        localStorage.setItem('fitness_refresh', res.refresh);
+        
+        const userData: any = { username: res.username };
         localStorage.setItem('fitness_user', JSON.stringify(userData));
         this.currentUserSubject.next(userData);
       }
-    }),
-    catchError(this.handleError)
+    })
   );
 }
 
-  logout(): void {
+logout(): void {
     localStorage.removeItem('fitness_token');
     localStorage.removeItem('fitness_user');
+    localStorage.removeItem('fitness_refresh');
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
-  }
+}
 
-  register(userData: any): Observable<any> {
+register(userData: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register/`, userData).pipe(
       catchError(this.handleError)
     );
-  }
+}
 
   // --- PROFILE ---
-  getProfile(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/profile/`, this.getHeaders()).pipe(
-      catchError(this.handleError)
-    );
-  }
+getProfile(): Observable<any> {
+  return this.http.get(`${this.apiUrl}/profile/`, this.getHeaders());
+}
 
-  updateProfile(data: any): Observable<any> {
+updateProfile(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/profile/`, data, this.getHeaders()).pipe(
       catchError(this.handleError)
     );
-  }
+ }
 
-  // --- DASHBOARD & METRICS (Те самые методы, которых не хватало) ---
-  getDashboardData(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/dashboard-summary/`, this.getHeaders()).pipe(
-      catchError(this.handleError)
-    );
-  }
 
-  // Метод для добавления тренировки 
-  // src/app/services/auth.service.ts
+getDashboardData(): Observable<any> {
+  return this.http.get(`${this.apiUrl}/dashboard-summary/`, this.getHeaders()).pipe(
+  catchError(this.handleError));
+  }
 
 getWorkouts(): Observable<any> {
   return this.http.get(`${this.apiUrl}/workouts/`, this.getHeaders());
 }
 
-// Этот метод нужен для твоего Дашборда (кнопка APPEND LOG)
 addWorkout(workoutData: any): Observable<any> {
   return this.http.post(`${this.apiUrl}/workouts/`, workoutData, this.getHeaders());
 }
@@ -93,18 +84,18 @@ deleteWorkout(id: number): Observable<any> {
 }
 
   // --- HELPERS ---
-  private getUserFromStorage(): User | null {
-    const userJson = localStorage.getItem('fitness_user');
-    try { return userJson ? JSON.parse(userJson) : null; } 
-    catch (e) { return null; }
+private getUserFromStorage(): User | null {
+  const userJson = localStorage.getItem('fitness_user');
+  try { return userJson ? JSON.parse(userJson) : null; } 
+  catch (e) { return null; }
+}
+
+private handleError(error: any) {
+  const msg = error.error?.detail || error.error?.message || 'Server error';
+  return throwError(() => new Error(msg));
   }
 
-  private handleError(error: any) {
-    const msg = error.error?.detail || error.error?.message || 'Server error';
-    return throwError(() => new Error(msg));
-  }
-
-  getDailyMetrics(): Observable<any> {
+getDailyMetrics(): Observable<any> {
   return this.http.get(`${this.apiUrl}/daily-metrics/`, this.getHeaders());
 }
 
@@ -116,8 +107,12 @@ getAIAdvice(): Observable<any> {
   return this.http.get(`${this.apiUrl}/ai-advice/`, this.getHeaders());
 }
 
-  isAuthenticated(): boolean {
+isAuthenticated(): boolean {
   return !!localStorage.getItem('fitness_token');
+}
+
+addSet(setData: any): Observable<any> {
+  return this.http.post(`${this.apiUrl}/workout-sets/`, setData, this.getHeaders());
 }
 
 getExercises(): Observable<any> {
@@ -126,17 +121,5 @@ getExercises(): Observable<any> {
 
 createExercise(data: any): Observable<any> {
   return this.http.post(`${this.apiUrl}/exercises/`, data, this.getHeaders());
-}
-
-createWorkoutLog(title: string): Observable<any> {
-  return this.http.post(`${this.apiUrl}/workouts/`, { title }, this.getHeaders());
-}
-
-createWorkout(title: string): Observable<any> {
-  return this.http.post(`${this.apiUrl}/workouts/`, { title }, this.getHeaders());
-}
-
-addSet(setData: any): Observable<any> {
-  return this.http.post(`${this.apiUrl}/workout-sets/`, setData, this.getHeaders());
 }
 }

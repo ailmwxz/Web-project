@@ -1,5 +1,4 @@
 import requests
-import json
 import os
 from django.db import models
 from dotenv import load_dotenv
@@ -7,11 +6,10 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import generics
 
 from .models import Profile, Exercise, WorkoutLog, WorkoutSet, DailyMetric
@@ -23,32 +21,18 @@ from .serializers import (
 
 load_dotenv()
 
-
 # Авторизация
-#FBV1
+#FBV1 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_view(request):
     serializer = RegisterSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
-    token, _ = Token.objects.get_or_create(user=user)
-    return Response({'token': token.key, 'username': user.username}, status=status.HTTP_201_CREATED) 
-
-class LoginView(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key, 'username': user.username})
-
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-    def post(self, request):
-        request.user.auth_token.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    refresh = RefreshToken.for_user(user)
+    
+    return Response({'refresh': str(refresh), 'access': str(refresh.access_token), 'username': user.username}, status=status.HTTP_201_CREATED)
 
 #FBV2 - инфа, сколько всего тренировок сделал юзер
 @api_view(['GET'])
@@ -225,13 +209,10 @@ class WorkoutSetCreateView(generics.CreateAPIView):
     queryset = WorkoutSet.objects.all()
     serializer_class = WorkoutSetSerializer
 
-    def post(self, request, *args, **kwargs):
-        print("DEBUG DATA:", request.data) 
-        
+    def post(self, request, *args, **kwargs):    
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        print("DEBUG ERRORS:", serializer.errors)
+            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

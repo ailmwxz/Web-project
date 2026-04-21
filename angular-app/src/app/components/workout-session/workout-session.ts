@@ -43,7 +43,7 @@ export class WorkoutSessionComponent implements OnInit {
       console.log('Открыта существующая сессия ID:', this.currentWorkoutId);
       this.loadSetsForWorkout(this.currentWorkoutId);
     } else {
-      this.authService.createWorkout(sessionTitle).subscribe({
+      this.authService.addWorkout(sessionTitle).subscribe({
         next: (res: any) => {
           this.currentWorkoutId = res.id;
           console.log(`Создана новая сессия: ${sessionTitle} (ID: ${res.id})`);

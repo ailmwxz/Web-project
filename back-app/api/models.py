@@ -14,7 +14,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     weight = models.FloatField(null=True, blank=True)
     height = models.FloatField(null=True, blank=True)
-    goal = models.CharField(max_length=20, choices=GOALS, default='power')
+    goal = models.CharField(max_length=20, choices=GOALS, default='Power')
     age = models.PositiveIntegerField(null=True, blank=True)
     bio = models.TextField(blank=True, default='')
     GENDER_CHOICES = [('Man', 'Мужчина'), ('Woman', 'Женщина'),('Other', 'Другой'),]

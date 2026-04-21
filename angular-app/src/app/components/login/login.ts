@@ -19,7 +19,7 @@ export class LoginComponent {
 
   onLogin() {
   if (this.loginData.username && this.loginData.password) {
-    this.authService.login(this.loginData.username, this.loginData.password).subscribe({
+    this.authService.login({ username: this.loginData.username, password: this.loginData.password }).subscribe({
       next: (res) => {
         console.log('Успешный вход!', res);
         this.router.navigate(['/dashboard']);

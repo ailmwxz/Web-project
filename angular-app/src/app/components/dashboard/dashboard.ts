@@ -74,25 +74,38 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  addQuickCardio() {
-    if (!this.quickCardio.type) return;
+addQuickCardio() {
+  if (!this.quickCardio.type) return;
 
-    const workoutTitle = `🏃 ${this.quickCardio.type} (${this.quickCardio.duration || 0}m)`;
-    
-    this.authService.createWorkout(workoutTitle).subscribe({
-      next: () => {
-        // Опционально: прибавляем ккал кардио к дневным метрикам
-        if (this.quickCardio.kcal) {
-          this.dailyMetrics.calories += this.quickCardio.kcal;
-          this.authService.updateDailyMetrics(this.dailyMetrics).subscribe(() => this.loadData());
-        } else {
-          this.loadData();
-        }
-        this.quickCardio = { type: '', duration: null, kcal: null };
+  // 1. Формируем объект, а не строку!
+  const workoutData = { 
+    title: `🏃 ${this.quickCardio.type} (${this.quickCardio.duration || 0}m)` 
+  };
+  
+  this.authService.addWorkout(workoutData).subscribe({
+    next: () => {
+      // 2. Логика ККАЛ: Сначала обновляем локально, потом шлем на сервер
+      if (this.quickCardio.kcal) {
+        this.dailyMetrics.calories = Number(this.dailyMetrics.calories) + Number(this.quickCardio.kcal);
+        
+        this.authService.updateDailyMetrics(this.dailyMetrics).subscribe({
+          next: () => {
+            this.loadData();
+            this.resetQuickCardio();
+          }
+        });
+      } else {
+        this.loadData();
+        this.resetQuickCardio();
       }
-    });
-  }
+    },
+    error: (err) => console.error('Ошибка при добавлении кардио:', err)
+  });
+}
 
+private resetQuickCardio() {
+  this.quickCardio = { type: '', duration: null, kcal: null };
+}
   deleteWorkout(id: number) {
     if (confirm('Удалить запись?')) {
       this.authService.deleteWorkout(id).subscribe({
