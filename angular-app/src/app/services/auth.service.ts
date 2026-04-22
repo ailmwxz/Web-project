@@ -19,7 +19,8 @@ getHeaders() {
   const token = localStorage.getItem('fitness_token');
   return {
     headers: new HttpHeaders({
-      'Authorization': `Bearer ${token}` 
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
     })
   };
 }

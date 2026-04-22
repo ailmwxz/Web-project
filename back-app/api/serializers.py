@@ -61,7 +61,7 @@ class WorkoutSetSerializer(serializers.ModelSerializer):
         fields = ['id', 'workout', 'exercise', 'exercise_name', 'reps', 'weight']
 
 class WorkoutLogSerializer(serializers.ModelSerializer):
-    sets = WorkoutSetSerializer(many=True, read_only=True)
+    sets = WorkoutSetSerializer(many=True, required=False)
 
     class Meta:
         model = WorkoutLog
@@ -69,10 +69,8 @@ class WorkoutLogSerializer(serializers.ModelSerializer):
         read_only_fields = ['user']
     
     def create(self, validated_data):
-        sets_data = validated_data.pop('sets', []) 
-        workout = WorkoutLog.objects.create(**validated_data)
-        for set_data in sets_data:
-            WorkoutSet.objects.create(workout=workout, **set_data)
+        sets_data = validated_data.pop('sets', [])
+        workout = WorkoutLog.objects.create(**validated_data) 
         return workout
 
 class DailyMetricSerializer(serializers.ModelSerializer):
